@@ -1,0 +1,4 @@
+.env
+pg-data-master/
+pg-data-slave_1/
+pg-data-slave_2/

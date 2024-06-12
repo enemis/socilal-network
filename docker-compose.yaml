@@ -1,0 +1,53 @@
+version: "3.9"
+services:
+#  social_network:
+#      container_name: social_network
+#      build:
+#        context: .
+#        dockerfile: Dockerfile
+#      depends_on:
+#        - postgres
+#        - postgres_slave_2
+#      ports:
+#      - "${SERVER_PORT}:8080"
+
+  postgres_social:
+    container_name: postgres_social
+    image: postgres:15.4
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - ./pg-data-master:/var/lib/postgresql/data:delegated
+      - ./pg-data-slave_1:/var/lib/postgresql/data2:delegated
+      - ./pg-data-slave_2:/var/lib/postgresql/data3:delegated
+
+    ports:
+      - "${DB_PORT}:5432"
+  
+  postgres_social_slave_1:
+    container_name: postgres_social_slave_1
+    image: postgres:15.4
+    depends_on:
+        - postgres_social
+    environment:
+      POSTGRES_DB: "${DB_NAME_REPLICA_1}"
+      POSTGRES_USER: "${DB_USERNAME_REPLICA_1}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD_REPLICA_1}"
+    volumes:
+      - ./pg-data-slave_1:/var/lib/postgresql/data:delegated
+    ports:
+      - "${DB_PORT_REPLICA_1}:5432"
+
+  adminer:
+    image: adminer
+    ports:
+        - 8081:8080      
+
+volumes:
+  pg-data:
+
+networks:
+    default:
+        name: social_network
