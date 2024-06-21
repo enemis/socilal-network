@@ -22,10 +22,8 @@ func init() {
 }
 
 func main() {
-	a, err := app.NewSeeder()
+	_, err := app.NewSeeder()
 	if err != nil {
 		logrus.Fatal(err.Error())
 	}
-
-	a.RunImport()
 }

@@ -9,9 +9,11 @@ type RestHandlerParams struct {
 	User   UserHandler
 	Friend FriendHandler
 	Post   PostHandler
+	Feed   FeedHandler
 }
 
 type RestHandler struct {
+	Feed   FeedHandler
 	Auth   AuthHandler
 	User   UserHandler
 	Friend FriendHandler
@@ -24,5 +26,6 @@ func NewRestHandler(params RestHandlerParams) *RestHandler {
 		User:   params.User,
 		Friend: params.Friend,
 		Post:   params.Post,
+		Feed:   params.Feed,
 	}
 }

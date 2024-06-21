@@ -7,7 +7,7 @@ CREATE TABLE "posts" (
   "title" character(255) NOT NULL,
   "post" text NOT NULL,
   "created_at" timestamp NOT NULL,
-  "update_at" timestamp NOT NULL,
+  "updated_at" timestamp NOT NULL,
   "deleted_at" timestamp,
   "status" post_status NOT NULL default 'draft',
   CONSTRAINT fk_users FOREIGN KEY(user_id)

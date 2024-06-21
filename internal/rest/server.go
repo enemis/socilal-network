@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"social-network-otus/internal/session"
 
 	"go.uber.org/fx"
 
@@ -34,12 +35,13 @@ type RestServerParams struct {
 	Logger      logger.LoggerInterface
 	AuthService *auth.AuthService
 	UserService *user.Service
+	Session     *session.SessionStorage
 	Response    *response.ResponseFactory
 }
 
 func NewRestServer(params RestServerParams) *RestServer {
 	ginEngine := gin.Default()
-	restRouter := router.NewRouter(ginEngine, params.Handler, params.AuthService, params.UserService, params.Response)
+	restRouter := router.NewRouter(ginEngine, params.Handler, params.Session, params.AuthService, params.UserService, params.Response)
 	return &RestServer{
 		Engine: ginEngine,
 		Router: restRouter,

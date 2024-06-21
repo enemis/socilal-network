@@ -11,6 +11,7 @@ import (
 )
 
 type FriendRepository interface {
+	GetFriends(user *user.User) ([]*user.User, *app_error.AppError)
 	AddFriend(user *user.User, friend *user.User) *app_error.AppError
 	RemoveFriend(user *user.User, friend *user.User) *app_error.AppError
 }
@@ -21,6 +22,31 @@ type FriendRepositoryInstance struct {
 
 func NewFriendRepository(db *database.DatabaseStack) *FriendRepositoryInstance {
 	return &FriendRepositoryInstance{db: db}
+}
+
+func (r *FriendRepositoryInstance) GetFriends(usr *user.User) ([]*user.User, *app_error.AppError) {
+	results := make([]*user.User, 0)
+
+	rows, err := r.db.GetReadConnection().Queryx(
+		"SELECT u.* FROM friends f "+
+			"INNER JOIN users u ON f.friend_id = u.id "+
+			"WHERE user_id=$1", usr.Id)
+
+	if err != nil {
+		return nil, app_error.NewInternalServerError(err)
+	}
+
+	for rows.Next() {
+		var friend user.User
+		err := rows.StructScan(&friend)
+		if err != nil {
+			return nil, app_error.NewInternalServerError(err)
+		}
+
+		results = append(results, &friend)
+	}
+
+	return results, nil
 }
 
 func (r *FriendRepositoryInstance) AddFriend(user *user.User, friend *user.User) *app_error.AppError {

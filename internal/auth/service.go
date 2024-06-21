@@ -47,7 +47,7 @@ func NewAuthService(params ServiceParams) *AuthService {
 	}
 }
 
-func (s *AuthService) Login(ctx context.Context, email, password string) (*string, *app_error.AppError) {
+func (s *AuthService) Login(_ context.Context, email, password string) (*string, *app_error.AppError) {
 	const errorMessage = "email or password invalid"
 	user, appErr := s.userService.GetUserByEmail(email)
 
@@ -81,7 +81,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (*strin
 }
 
 func (s *AuthService) ParseToken(accessToken string) (uuid.UUID, error) {
-	token, err := jwt.ParseWithClaims(accessToken, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
@@ -93,12 +93,12 @@ func (s *AuthService) ParseToken(accessToken string) (uuid.UUID, error) {
 		return uuid.Nil, err
 	}
 
-	claims, ok := token.Claims.(*jwt.StandardClaims)
+	claims, ok := token.Claims.(*Claims)
 	if !ok {
-		return uuid.Nil, errors.New("token claims are not of type tokenClaims")
+		return uuid.Nil, errors.New("token claims are not of type Claims")
 	}
 
-	return uuid.FromBytes([]byte(claims.Issuer))
+	return uuid.Parse(claims.Issuer)
 }
 
 func (s *AuthService) signToken(token *jwt.Token) (string, error) {

@@ -9,5 +9,15 @@ var Module = fx.Options(
 			NewPostRepository,
 			fx.As(new(PostRepository)),
 		),
+		NewFeedService,
+		NewCacheService,
+		NewFeedWarmupConsumer,
+		fx.Annotate(
+			NewFeedRepository,
+			fx.As(new(FeedRepository)),
+		),
+	),
+	fx.Invoke(
+		InitHooks,
 	),
 )

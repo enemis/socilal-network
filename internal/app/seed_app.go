@@ -2,6 +2,7 @@ package app
 
 import (
 	"go.uber.org/fx"
+	"social-network-otus/internal/session"
 
 	"social-network-otus/internal/auth"
 	"social-network-otus/internal/config"
@@ -9,7 +10,6 @@ import (
 	"social-network-otus/internal/friend"
 	"social-network-otus/internal/logger"
 	"social-network-otus/internal/post"
-	"social-network-otus/internal/rest"
 	"social-network-otus/internal/seeder"
 	"social-network-otus/internal/token"
 	"social-network-otus/internal/user"
@@ -26,20 +26,16 @@ func NewSeeder() (*SeedApp, error) {
 		config.Module,
 		logger.Module,
 		database.Module,
-		rest.Module,
 		auth.Module,
 		seeder.Module,
 		token.Module,
 		user.Module,
 		friend.Module,
 		post.Module,
+		session.Module,
 	)
 
 	app := SeedApp{container: fxContainer}
 
 	return &app, nil
-}
-
-func (app *SeedApp) RunImport() {
-	app.seeder.Seed()
 }

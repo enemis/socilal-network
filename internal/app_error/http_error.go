@@ -39,6 +39,10 @@ func NewBadRequestFromError(originalError error) *AppError {
 	return NewFromError(originalError, http.StatusBadRequest)
 }
 
+func NewNotFoundFromError(originalError error) *AppError {
+	return NewFromError(originalError, http.StatusNotFound)
+}
+
 func NewFromError(originalError error, status int) *AppError {
 	if status == 0 {
 		status = http.StatusInternalServerError

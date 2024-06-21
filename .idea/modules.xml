@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../../../gitlab.com/pay2play/core-admin-panel/.idea/core-admin-panel.iml" filepath="$PROJECT_DIR$/../../../gitlab.com/pay2play/core-admin-panel/.idea/core-admin-panel.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../otus-social-network/.idea/otus-social-network.iml" filepath="$PROJECT_DIR$/../otus-social-network/.idea/otus-social-network.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/social-network-otus.iml" filepath="$PROJECT_DIR$/.idea/social-network-otus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../core-admin-panel/.idea/core-admin-panel.iml" filepath="$PROJECT_DIR$/../core-admin-panel/.idea/core-admin-panel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/socilal-network.iml" filepath="$PROJECT_DIR$/.idea/socilal-network.iml" />
     </modules>
   </component>
 </project>

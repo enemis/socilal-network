@@ -5,8 +5,10 @@ import (
 )
 
 var Module = fx.Options(
-
 	fx.Provide(
 		NewSeeder,
+	),
+	fx.Invoke(
+		RunImport,
 	),
 )

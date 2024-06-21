@@ -11,7 +11,7 @@ import (
 	"social-network-otus/internal/logger"
 )
 
-type F map[string]interface{}
+type F = map[string]interface{}
 
 type ResponseFactory struct {
 	Logger logger.LoggerInterface

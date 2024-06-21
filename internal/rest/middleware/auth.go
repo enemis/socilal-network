@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"social-network-otus/internal/session"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ const (
 	UserContext          = "User"
 )
 
-func AuthRequired(authService *auth.AuthService, userService *user.Service, response *response.ResponseFactory) gin.HandlerFunc {
+func AuthRequired(authService *auth.AuthService, session *session.SessionStorage, userService *user.Service, response *response.ResponseFactory) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader(AuthorizationHeadder)
 
@@ -38,13 +39,13 @@ func AuthRequired(authService *auth.AuthService, userService *user.Service, resp
 			return
 		}
 
-		userModel, err := userService.GetUserById(userId.String())
+		userModel, appErr := userService.GetUserById(userId.String())
 
-		if err != nil {
+		if appErr != nil {
 			response.Unauthorised(c)
 			return
 		}
-		c.Set(UserContext, userModel)
+		session.SetAuthenticatedUser(userModel)
 		c.Next()
 	}
 }

@@ -1,15 +1,15 @@
 version: "3.9"
 services:
-#  social_network:
-#      container_name: social_network
-#      build:
-#        context: .
-#        dockerfile: Dockerfile
-#      depends_on:
-#        - postgres
-#        - postgres_slave_2
-#      ports:
-#      - "${SERVER_PORT}:8080"
+  social_network:
+      container_name: social_network
+      build:
+        context: .
+        dockerfile: Dockerfile
+      depends_on:
+        - postgres_social
+        - postgres_social_slave_1
+      ports:
+      - "${SERVER_PORT}:8080"
 
   postgres_social:
     container_name: postgres_social
@@ -20,12 +20,12 @@ services:
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
     volumes:
       - ./pg-data-master:/var/lib/postgresql/data:delegated
-      - ./pg-data-slave_1:/var/lib/postgresql/data2:delegated
-      - ./pg-data-slave_2:/var/lib/postgresql/data3:delegated
-
+      - ./pg-data-slave_1:/var/lib/postgresql/data1:delegated
+      - ./docker/db_master/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf:delegated
+      - ./docker/db_master/postgresql.conf:/var/lib/postgresql/data/postgresql.conf:delegated
     ports:
       - "${DB_PORT}:5432"
-  
+
   postgres_social_slave_1:
     container_name: postgres_social_slave_1
     image: postgres:15.4
@@ -37,16 +37,32 @@ services:
       POSTGRES_PASSWORD: "${DB_PASSWORD_REPLICA_1}"
     volumes:
       - ./pg-data-slave_1:/var/lib/postgresql/data:delegated
+      - ./docker/db_replica/standby.signal:/var/lib/postgresql/data/standby.signal:delegated
+      - ./docker/db_replica/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf:delegated
+      - ./docker/db_replica/postgresql.conf:/var/lib/postgresql/data/postgresql.conf:delegated
     ports:
       - "${DB_PORT_REPLICA_1}:5432"
+
+  redis_social_network:
+    container_name: redis_social_network
+    image: redis:alpine
+    ports:
+      - 6379:6379
+
+  rabbitmq_social_network:
+    container_name: rabbitmq_social_network
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker/rabbitmq/log/:/var/log/rabbitmq
 
   adminer:
     image: adminer
     ports:
         - 8081:8080      
-
-volumes:
-  pg-data:
 
 networks:
     default:

@@ -17,6 +17,7 @@ type UserRepository interface {
 	GetUserByEmail(email string) (*User, *app_error.AppError)
 	GetUserById(userId string) (*User, *app_error.AppError)
 	CreateUser(user *User) (*uuid.UUID, *app_error.AppError)
+	UpdateUser(user *User) *app_error.AppError
 	FindUsers(name, surname string) ([]*User, *app_error.AppError)
 }
 
@@ -104,15 +105,50 @@ func (r *UserRepositoryInstance) CreateUser(user *User) (*uuid.UUID, *app_error.
 		}
 	}
 
-	query := "INSERT INTO users (name, surname, email, birthday, biography, city, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id"
+	query := "INSERT INTO users (id, name, surname, email, birthday, biography, city, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id"
 
 	now := time.Now()
 	var userId uuid.UUID
-	err = r.db.GetWriteConnection().QueryRow(query, user.Name, user.Surname, user.Email, user.Birthday, user.Biography, user.City, user.Password, now, now).Scan(&userId)
+	err = r.db.GetWriteConnection().QueryRow(query, user.Id, user.Name, user.Surname, user.Email, user.Birthday, user.Biography, user.City, user.Password, now, now).Scan(&userId)
 
 	if err != nil {
 		return nil, app_error.NewInternalServerError(err)
 	}
 
 	return &userId, nil
+}
+
+func (r *UserRepositoryInstance) UpdateUser(user *User) *app_error.AppError {
+	rows, err := r.db.Slave().Query("SELECT EXISTS(SELECT 1 FROM users WHERE email=$1)", user.Email)
+	if err != nil {
+		return app_error.NewInternalServerError(err)
+	}
+
+	var exists bool
+
+	defer rows.Close()
+
+	if rows.Next() {
+		if err := rows.Scan(&exists); err != nil {
+			return app_error.NewInternalServerError(err)
+		}
+
+		if !exists {
+			return app_error.NewBadRequestFromError(errors.New(fmt.Sprintf("User with email %s doesnt exist", user.Email)))
+		}
+	}
+
+	query := "UPDATE users SET " +
+		"name=$1, surname=$2, email=$3, birthday=$4, biography=$5, city=$6, password=$7, updated_at=$8 " +
+		"WHERE id=$9"
+
+	now := time.Now()
+
+	_, err = r.db.GetWriteConnection().Exec(query, user.Name, user.Surname, user.Email, user.Birthday, user.Biography, user.City, user.Password, now, user.Id)
+
+	if err != nil {
+		return app_error.NewInternalServerError(err)
+	}
+
+	return nil
 }

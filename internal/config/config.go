@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"time"
 )
 
 type Config struct {
@@ -19,6 +20,16 @@ type Config struct {
 	DBPasswordReplica1 string `mapstructure:"DB_PASSWORD_REPLICA_1"`
 	DBNameReplica1     string `mapstructure:"DB_NAME_REPLICA_1"`
 	DBSSLModeReplica1  string `mapstructure:"DB_SSLMODE_REPLICA_1"`
+
+	RedisHost    string `mapstructure:"REDIS_HOST"`
+	RedisCacheDb int    `mapstructure:"REDIS_CACHE_DB"`
+
+	RabbitMqAddr string `mapstructure:"RABBITMQ_ADDR"`
+
+	FeedCache     time.Duration `mapstructure:"FEED_CACHE"`
+	FeedLastCount uint          `mapstructure:"FEED_LAST_COUNT"`
+
+	QueueWarmUpFeed string `mapstructure:"QUEUE_WARM_UP_FEED"`
 
 	HttpServer string `mapstructure:"HTTP_SERVER"`
 	Salt       string `mapstructure:"APP_SALT"`
