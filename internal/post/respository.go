@@ -55,11 +55,11 @@ func (r *PostRepositoryInstance) CreatePost(post *Post) (*Post, *app_error.AppEr
 
 func (r *PostRepositoryInstance) UpdatePost(post *Post) (*Post, *app_error.AppError) {
 	query := "UPDATE posts " +
-		"SET (title, post, update_at, status) " +
-		"VALUES ($1, $2, $3, $4) WHERE id=$5"
+		"SET title=$1, post=$2, updated_at=$3, status=$4 " +
+		"WHERE id=$5"
 
 	post.UpdatedAt = time.Now()
-	err := r.db.GetWriteConnection().QueryRow(query, post.Title, post.Post, post.UpdatedAt, post.Status, post.Id).Scan()
+	_, err := r.db.GetWriteConnection().Exec(query, post.Title, post.Post, post.UpdatedAt, post.Status, post.Id)
 	if err != nil {
 		return nil, app_error.NewInternalServerError(err)
 	}
@@ -74,8 +74,8 @@ func (r *PostRepositoryInstance) DeletePost(postId string) *app_error.AppError {
 	}
 
 	query := "UPDATE posts " +
-		"SET (deleted_at, update_at) " +
-		"VALUES ($1, $2) WHERE id=$5"
+		"SET deleted_at=$1, update_at=$2 " +
+		"WHERE id=$5"
 
 	dberr := r.db.GetWriteConnection().QueryRow(query, time.Now(), time.Now(), postId).Scan()
 	if dberr != nil {

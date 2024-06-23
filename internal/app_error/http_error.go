@@ -39,6 +39,10 @@ func NewBadRequestFromError(originalError error) *AppError {
 	return NewFromError(originalError, http.StatusBadRequest)
 }
 
+func NewForbiddenFromError(originalError error) *AppError {
+	return NewFromError(originalError, http.StatusForbidden)
+}
+
 func NewNotFoundFromError(originalError error) *AppError {
 	return NewFromError(originalError, http.StatusNotFound)
 }

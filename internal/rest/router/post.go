@@ -7,7 +7,7 @@ func (r *Router) initPostRoutes(authorizedGroup *gin.RouterGroup) {
 	{
 		post.GET("/:id", r.handler.Post.GetPost)
 		post.POST("", r.handler.Post.CreatePost)
-		post.PUT("", r.handler.Post.UpdatePost)
+		post.PUT("/:id", r.handler.Post.UpdatePost)
 		post.DELETE("/:id", r.handler.Post.DeletePost)
 	}
 }

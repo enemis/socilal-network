@@ -82,23 +82,24 @@ func (h *PostHandlerInstance) UpdatePost(c *gin.Context) {
 	var input PostInput
 	validator := validator.NewValidator(input)
 
+	id := c.Param("id")
+	post, apperr := h.postService.GetPost(id)
+
+	if apperr != nil {
+		h.response.FromAppError(c, apperr, utils.Ptr("id"))
+		return
+	}
+
 	if err := c.ShouldBind(&input); err != nil {
 		h.response.BadRequest(c, validator.DecryptErrors(err).(response.F))
 		return
 	}
 
-	user := h.session.GetAuthenticatedUser()
+	post.Status = input.Status
+	post.Title = input.Title
+	post.Post = input.Post
 
-	post, apperror := h.postService.CreatePost(&post.Post{
-		Id:        uuid.UUID{},
-		UserId:    user.Id,
-		Title:     input.Title,
-		Post:      input.Post,
-		Status:    input.Status,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		DeletedAt: nil,
-	})
+	post, apperror := h.postService.UpdatePost(post)
 
 	if apperror != nil {
 		h.response.FromAppError(c, apperror, utils.Ptr("post"))
