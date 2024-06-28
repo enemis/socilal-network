@@ -30,7 +30,7 @@ func (r *FriendRepositoryInstance) GetFriends(usr *user.User) ([]*user.User, *ap
 	rows, err := r.db.GetReadConnection().Queryx(
 		"SELECT u.* FROM friends f "+
 			"INNER JOIN users u ON f.friend_id = u.id "+
-			"WHERE user_id=$1", usr.Id)
+			"WHERE f.user_id=$1 ORDER BY created_at desc", usr.Id)
 
 	if err != nil {
 		return nil, app_error.NewInternalServerError(err)

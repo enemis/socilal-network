@@ -55,7 +55,7 @@ func (s *PostService) CreatePost(post *Post) (*Post, *app_error.AppError) {
 			return post, nil
 		}
 
-		s.feedService.ScheduleFriendsFeedWarming(usr)
+		s.feedService.NotifyFriends(usr, post)
 	}
 
 	return post, nil
@@ -78,7 +78,7 @@ func (s *PostService) UpdatePost(post *Post) (*Post, *app_error.AppError) {
 			return post, nil
 		}
 
-		s.feedService.ScheduleFriendsFeedWarming(usr)
+		s.feedService.NotifyFriends(usr, post)
 	}
 
 	return post, nil
@@ -107,7 +107,7 @@ func (s *PostService) DeletePost(postId string) *app_error.AppError {
 			return nil
 		}
 
-		s.feedService.ScheduleFriendsFeedWarming(usr)
+		s.feedService.NotifyFriends(usr, nil)
 	}
 
 	return nil

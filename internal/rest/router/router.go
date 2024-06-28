@@ -35,4 +35,5 @@ func (r *Router) initRoutes() {
 	r.initFriendRoutes(authorized)
 	r.initPostRoutes(authorized)
 	r.initFeedRoutes(authorized)
+	r.initWSRoutes(authorized)
 }

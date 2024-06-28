@@ -10,6 +10,7 @@ import (
 	"social-network-otus/internal/config"
 	"social-network-otus/internal/friend"
 	"social-network-otus/internal/logger"
+	"social-network-otus/internal/notifier_ws"
 	"social-network-otus/internal/queue"
 	"social-network-otus/internal/user"
 	"social-network-otus/internal/utils"
@@ -17,24 +18,26 @@ import (
 )
 
 type FeedService struct {
-	cache            *Cache
-	repository       FeedRepository
-	friendRepository friend.FriendRepository
-	config           *config.Config
-	logger           logger.LoggerInterface
-	userService      *user.Service
-	FeedWarmupQueue  *queue.Client
+	cache             *Cache
+	repository        FeedRepository
+	friendRepository  friend.FriendRepository
+	config            *config.Config
+	logger            logger.LoggerInterface
+	userService       *user.Service
+	FeedWarmupQueue   *queue.Client
+	WebsocketNotifier *notifier_ws.Notifier
 }
 
-func NewFeedService(cache *Cache, userService *user.Service, FeedWarmupQueue *queue.Client, config *config.Config, logger logger.LoggerInterface, repository FeedRepository, friendRepository friend.FriendRepository) *FeedService {
+func NewFeedService(cache *Cache, userService *user.Service, FeedWarmupQueue *queue.Client, notifier *notifier_ws.Notifier, config *config.Config, logger logger.LoggerInterface, repository FeedRepository, friendRepository friend.FriendRepository) *FeedService {
 	return &FeedService{
-		cache:            cache,
-		config:           config,
-		friendRepository: friendRepository,
-		repository:       repository,
-		logger:           logger,
-		userService:      userService,
-		FeedWarmupQueue:  FeedWarmupQueue,
+		cache:             cache,
+		config:            config,
+		friendRepository:  friendRepository,
+		repository:        repository,
+		logger:            logger,
+		userService:       userService,
+		FeedWarmupQueue:   FeedWarmupQueue,
+		WebsocketNotifier: notifier,
 	}
 }
 
@@ -83,21 +86,36 @@ func (s *FeedService) limitFees(feed *Feed, limit, offset uint) *Feed {
 	return feed
 }
 
-func (s *FeedService) ScheduleFriendsFeedWarming(user *user.User) *app_error.AppError {
+func (s *FeedService) NotifyFriends(user *user.User, post *Post) *app_error.AppError {
 	friends, err := s.friendRepository.GetFriends(user)
 	if err != nil {
 		return err
 	}
 
-	for _, friend := range friends {
+	msg := PostWSMessage{
+		FeedItem: *postToFeedItem(post),
+		UserName: user.FullName(),
+	}
+
+	for _, frnd := range friends {
+		if post != nil {
+			if s.WebsocketNotifier.IsUserConnected(frnd) == true {
+				_, err := s.WebsocketNotifier.Notify(frnd, msg)
+				s.logger.Error("WS notify error", err, nil)
+			}
+		}
 		data, err := json.Marshal(queue.FeedWarmUpQueueItem{
-			UserId: friend.Id.String(),
+			UserId: frnd.Id.String(),
 			Date:   time.Now(),
 		})
 		if err != nil {
 			s.logger.Error("Marshaling error", err, nil)
+			return nil
 		}
-		s.FeedWarmupQueue.Push(data)
+		err = s.FeedWarmupQueue.Push(data)
+		if err != nil {
+			s.logger.Error("Marshaling error", err, nil)
+		}
 	}
 
 	return nil

@@ -10,5 +10,6 @@ var Module = fx.Options(
 		fx.Annotate(NewFriendHandler, fx.As(new(FriendHandler))),
 		fx.Annotate(NewPostHandler, fx.As(new(PostHandler))),
 		fx.Annotate(NewFeedHandler, fx.As(new(FeedHandler))),
+		fx.Annotate(NewWSHandlerInstance, fx.As(new(WSHandler))),
 	),
 )

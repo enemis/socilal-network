@@ -36,9 +36,9 @@ func (h *AuthHandlerInstance) SignIn(c *gin.Context) {
 		h.response.BadRequest(c, response.F{"errors": newValidator.DecryptErrors(err)})
 	}
 
-	token, err := h.authService.Login(c.Request.Context(), input.Email, input.Password)
+	token, apperr := h.authService.Login(c.Request.Context(), input.Email, input.Password)
 
-	if err != nil {
+	if apperr != nil {
 		h.response.BadRequest(c, response.F{"email": "invalid email"})
 		return
 	}

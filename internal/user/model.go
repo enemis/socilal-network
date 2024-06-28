@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,4 +19,8 @@ type User struct {
 	CreatedAt  time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 	LastOnline time.Time `json:"last_online" db:"last_online"`
+}
+
+func (u *User) FullName() string {
+	return fmt.Sprintf("%s %s", u.Surname, u.Name)
 }

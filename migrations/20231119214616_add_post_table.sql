@@ -4,7 +4,7 @@ CREATE TYPE post_status AS ENUM ('draft', 'published');
 CREATE TABLE "posts" (
   "id" uuid NOT NULL,
   "user_id" uuid not null,
-  "title" character(255) NOT NULL,
+  "title" varchar(255) NOT NULL,
   "post" text NOT NULL,
   "created_at" timestamp NOT NULL,
   "updated_at" timestamp NOT NULL,

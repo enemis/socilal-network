@@ -3,6 +3,7 @@ package app
 import (
 	"go.uber.org/fx"
 	"social-network-otus/internal/cache"
+	"social-network-otus/internal/notifier_ws"
 	"social-network-otus/internal/queue"
 
 	"social-network-otus/internal/auth"
@@ -37,6 +38,7 @@ func NewApp() (*App, error) {
 		friend.Module,
 		post.Module,
 		queue.Module,
+		notifier_ws.Module,
 	)
 	return &App{
 		container: fxContainer,

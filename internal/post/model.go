@@ -1,6 +1,9 @@
 package post
 
 import (
+	"github.com/goccy/go-json"
+	"social-network-otus/internal/notifier_ws"
+	"social-network-otus/internal/utils"
 	"time"
 
 	"github.com/google/uuid"
@@ -33,12 +36,30 @@ const (
 )
 
 type FeedItem struct {
-	Title  string
-	Path   string
-	Teaser string
+	Title  string `json:"title"`
+	Path   string `json:"path"`
+	Teaser string `json:"teaser"`
 }
 
 type Feed struct {
 	Items  []*FeedItem
 	Status StatusFeed
+}
+
+type PostWSMessage struct {
+	FeedItem
+	UserName string `json:"user_name"`
+}
+
+func (s PostWSMessage) GetMessage() (*string, error) {
+	bytes, err := json.Marshal(s)
+	if err != nil {
+		return nil, err
+	}
+
+	return utils.Ptr(string(bytes)), nil
+}
+
+func (s PostWSMessage) GetType() int {
+	return notifier_ws.New_post_message
 }
