@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option go_package = "./;proto";
+
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "pagination.proto";
+
+service DialogService {
+  rpc SendMessage(SendMessageDialogRequest) returns (SendMessageDialogResponse);
+  rpc GetDialog(GetDialogRequest) returns (GetDialogResponse);
+}
+
+message UUID {
+     string value = 1;
+}
+
+message User {
+  UUID id = 1;
+}
+
+message Message{
+  UUID Id = 1;
+  UUID UserId = 2;
+  UUID DialogId = 3;
+  google.protobuf.Timestamp CreateAt = 4;
+  optional google.protobuf.Timestamp DeletedAt = 5;
+  string Message = 6;
+}
+
+message SendMessageDialogRequest {
+    User sender = 1;
+    User reciever = 2;
+    string message = 3;
+}
+
+message SendMessageDialogResponse {
+  Message message = 1;
+}
+
+message GetDialogRequest {
+  User sender = 1;
+  User receiver = 2;
+  Pagination pagination = 3;
+}
+
+message GetDialogResponse {
+  PaginationResponse pagination = 1;
+  repeated Message messages = 2;
+}

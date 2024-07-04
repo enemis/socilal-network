@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "./;proto";
+
+message Pagination {
+    // Current offset to display.
+    uint32 offset = 1;
+
+    // Items per offset.
+    uint32 limit = 2;
+}
+
+message PaginationResponse {
+    // Current offset to display.
+    uint32 offset = 1;
+
+    // Items per offset.
+    uint32 limit = 2;
+
+    //Total items in storage
+    uint32 total_count = 3;
+}

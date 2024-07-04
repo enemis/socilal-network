@@ -35,6 +35,8 @@ type Config struct {
 	Salt       string `mapstructure:"APP_SALT"`
 	SigningKey string `mapstructure:"APP_SIGNING_KEY"`
 	TokenTTL   uint   `mapstructure:"AUTH_TOKEN_TTL"`
+
+	GRPCDialogs string `mapstructure:"GRPC_DIALOGS"`
 }
 
 func NewConfig() (*Config, error) {

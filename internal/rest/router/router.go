@@ -36,4 +36,5 @@ func (r *Router) initRoutes() {
 	r.initPostRoutes(authorized)
 	r.initFeedRoutes(authorized)
 	r.initWSRoutes(authorized)
+	r.initDialogsRoutes(authorized)
 }
